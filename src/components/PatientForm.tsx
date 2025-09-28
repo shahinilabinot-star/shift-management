@@ -10,6 +10,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserPlus, X, FileText, UserX } from 'lucide-react';
 import { Patient, ActivityLog, User, DEPARTMENTS, Task, DischargedPatient, DeceasedPatient, COUNTRIES } from '@/types/medical';
+import { supabase } from '@/lib/supabase';
+
 
 interface PatientFormProps {
   onAddPatient?: (patient: Patient) => void;
@@ -98,6 +100,20 @@ export default function PatientForm({
     setFilteredCountries(filtered);
   };
 
+const handleAddPatient = async (patient: Patient) => {
+  const { data, error } = await supabase
+    .from('patients')
+    .insert([patient]);
+
+  if (error) {
+    console.error('Error inserting patient:', error.message);
+    alert('Failed to add patient');
+  } else {
+    console.log('Patient added:', data);
+  }
+};
+
+
   const handleNewPatientSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -153,7 +169,7 @@ export default function PatientForm({
     if (isEditing && onUpdatePatient) {
       onUpdatePatient(patient);
     } else if (onAddPatient) {
-      onAddPatient(patient);
+      onAddPatient(handleAddPatient(patient));
       
       // Generate sheath removal tasks if PCI access is selected
       if (newPatientForm.radial) {

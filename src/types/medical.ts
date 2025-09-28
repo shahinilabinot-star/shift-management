@@ -9,8 +9,6 @@ export interface User {
 export interface ShiftSession {
   id: string;
   userName: string;
-  department: string;
-  location: string;
   startTime: Date;
   endTime?: Date;
   isActive: boolean;
